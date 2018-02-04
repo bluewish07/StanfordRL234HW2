@@ -1,0 +1,5 @@
+/results
+*.pyc
+/gym
+/.idea
+.DS_Store
