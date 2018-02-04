@@ -157,8 +157,12 @@ class Linear(DQN):
         q_vars_by_name_suffix = dict([(q_var.name[q_var.name.find('/'):], q_var) for q_var in q_vars])
         target_q_vars_by_name_suffix = dict([(var.name[var.name.find('/'):], var) for var in target_q_vars])
         for q_var_name_suffix, q_var in q_vars_by_name_suffix.iteritems():
+            #q_var = tf.Print(q_var, [q_var], "current_q", summarize=20)
             target_q_var = target_q_vars_by_name_suffix[q_var_name_suffix]
-            op_list.append(tf.assign(target_q_var, q_var))
+            #target_q_var = tf.Print(target_q_var, [target_q_var], "target before", summarize=20)
+            target_q_var = tf.assign(target_q_var, q_var)
+            #target_q_var = tf.Print(target_q_var, [target_q_var], "target after", summarize=20)
+            op_list.append(target_q_var)
 
         self.update_target_op = tf.group(*op_list)
 
@@ -212,7 +216,7 @@ class Linear(DQN):
         q_a = tf.reduce_sum(tf.one_hot(self.a, num_actions) * q, axis=1) # (batch_size)
         #q_a = tf.Print(q_a, [q_a], message="q_a")
         loss_batch = (q_samp - q_a) ** 2
-        self.loss = tf.reduce_sum(loss_batch) / self.config.batch_size
+        self.loss = tf.reduce_mean(loss_batch)
 
 
         ##############################################################
